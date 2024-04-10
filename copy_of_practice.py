@@ -207,4 +207,71 @@ for label, name in class_names.items():
        if np.ndim(image) == 3:
           X_train.append(cv2.resize(image, (img_size,img_size)))
           y_train.append(label)
+sweep_config = {
+    'method': 'random',
+    'metric': {
+      'name': 'accuracy',
+      'goal': 'maximize'
+    },
+    'parameters': {
+        'kernel_size':{
+            'values': [[(3,3),(3,3),(3,3),(3,3),(3,3)], [(3,3),(5,5),(5,5),(7,7),(7,7)], [(7,7),(7,7),(5,5),(5,5),(3,3)], [(3,3),(5,5),(7,7),(9,9),(11,11)] ]
+        },
+        'weight_decay': {
+            'values': [0, 0.0005, 0.005]
+        },
+        'dropout': {
+            'values': [0, 0.2, 0.4]
+        },
+        'learning_rate': {
+            'values': [1e-3, 1e-4]
+        },
+        'activation': {
+            'values': ['relu', 'elu', 'selu']
+        },
+        'batch_norm':{
+            'values': ['true','false']
+        },
+        'filt_org':{
+            'values': [[32,32,32,32,32],[32,64,64,128,128],[128,128,64,64,32],[32,64,128,256,512]]
+        },
+        'data_augment': {
+            'values': ['true','false']
+        },
+        'batch_size': {
+            'values': [32, 64]
+        },
+        'num_dense':{
+            'values': [64, 128, 256, 512]
+        }
+    }
+}
 
+# Initialize a new sweep
+sweep_id = wandb.sweep(sweep_config, entity="bhavik-160990105023", project="cs6910assignment2")
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.utils.data import DataLoader, random_split, Dataset
+from torchvision import transforms
+import pytorch_lightning as pl
+import os
+from PIL import Image
+
+class InaturalistDataset(Dataset):
+    def __init__(self, data, labels, transform=None):
+        self.data = data
+        self.labels = labels
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        image = self.data[idx]
+        label = self.labels[idx]
+        if self.transform:
+            image = self.transform(image)
+        return image, label
