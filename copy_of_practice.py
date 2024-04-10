@@ -188,4 +188,23 @@ y_train = one_hot_encode(y_train_tensor, num_classes)
 y_val = one_hot_encode(y_val_tensor, num_classes)
 
 
+# Define the labels for the Simpsons characters we're detecting
+class_names = {0:'Amphibia', 1:'Animalia', 2:'Arachnida',3: 'Aves',4: 'Fungi',
+              5: 'Insecta', 6:'Mammalia', 7:'Mollusca', 8:'Plantae',9: 'Reptilia'}
+num_classes = 10
+img_size = 128
+dir = 'inaturalist-dataset/train'
+
+import random
+
+# Load training data
+X_train = []
+y_train = []
+for label, name in class_names.items():
+   list_images = os.listdir(dir+'/'+name)
+   for image_name in list_images:
+       image = imageio.imread(dir+'/'+name+'/'+image_name)
+       if np.ndim(image) == 3:
+          X_train.append(cv2.resize(image, (img_size,img_size)))
+          y_train.append(label)
 
