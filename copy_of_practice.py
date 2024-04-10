@@ -275,3 +275,84 @@ class InaturalistDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         return image, label
+
+
+
+class ConvolutionalNetwork(pl.LightningModule):
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+        self.num_classes = config.num_classes
+
+        # Define the convolutional layers
+        self.conv_layers = nn.ModuleList()
+        filter_sizes = config.filt_org
+        for i, (filters, kernel_size) in enumerate(zip(filter_sizes, config.kernel_size)):
+            conv_layer = nn.Conv2d(in_channels=3 if i == 0 else filter_sizes[i-1],
+                                   out_channels=filters,
+                                   kernel_size=kernel_size,
+                                   padding='same')
+            self.conv_layers.append(conv_layer)
+
+            if config.activation == "relu":
+                self.conv_layers.append(nn.ReLU())
+            elif config.activation == "elu":
+                self.conv_layers.append(nn.ELU())
+            elif config.activation == "selu":
+                self.conv_layers.append(nn.SELU())
+
+            if config.batch_norm == 'True':
+                self.conv_layers.append(nn.BatchNorm2d(filters))
+
+            self.conv_layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
+
+        # Define the fully connected layers
+        self.fc_layers = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(filter_sizes[-1] * (img_size // 2**len(filter_sizes)) ** 2, config.num_dense),
+            nn.Dropout(config.dropout),
+            nn.BatchNorm1d(config.num_dense),
+            nn.ReLU() if config.activation == "relu" else nn.ELU() if config.activation == "elu" else nn.SELU(),
+            nn.Linear(config.num_dense, num_classes)
+        )
+
+    def forward(self, x):
+        for layer in self.conv_layers:
+            x = layer(x)
+        x = self.fc_layers(x)
+        return x
+
+    def training_step(self, batch, batch_idx):
+        x, y = batch
+        x, y = x.to(device), y.to(device)  # Move input and label tensors to the configured device
+        y_hat = self(x)
+        loss = F.cross_entropy(y_hat, y)
+        self.log('train_loss', loss)
+
+        # Calculate accuracy
+        preds = torch.argmax(y_hat, dim=1)
+        preds = preds.view(-1, 1)  # Reshape preds to match the shape of y
+        acc = (preds == y).float().mean()
+        self.log('train_acc', acc)
+
+        # Print training loss and accuracy
+        if batch_idx % 100 == 0:
+            print(f"Batch {batch_idx}: Train Loss {loss.item():.4f}, Train Acc {acc.item():.4f}")
+
+        return loss,acc
+
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        x, y = x.to(device), y.to(device)  # Move input and label tensors to the configured device
+        y_hat = self(x)
+        loss = F.cross_entropy(y_hat, y)
+        self.log('val_loss', loss)
+
+
+
+
+    def configure_optimizers(self):
+        optimizer = optim.Adam(self.parameters(), lr=self.config.learning_rate,
+                               betas=(0.9, 0.999), weight_decay=self.config.weight_decay)
+        return optimizer
+
