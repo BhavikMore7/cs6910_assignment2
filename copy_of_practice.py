@@ -356,3 +356,48 @@ class ConvolutionalNetwork(pl.LightningModule):
                                betas=(0.9, 0.999), weight_decay=self.config.weight_decay)
         return optimizer
 
+
+def train():
+    config_defaults = {
+        'kernel_size': [(3,3),(3,3),(3,3),(3,3),(3,3)],
+        'weight_decay': 0.005,
+        'dropout': 0.2,
+        'learning_rate': 1e-3,
+        'activation': 'relu',
+        'batch_size': 64,
+        'epochs': 10,
+        'batch_norm': 'true',
+        'filt_org' : [32,32,32,32,32],
+        'conv_layer_size' : 16,
+        'data_augment': 'true',
+        'num_dense': 256,
+        'seed': 42,
+        'num_classes': 10
+    }
+    # Initialize a new wandb run
+    wandb.init(config=config_defaults)
+    config = wandb.config
+    wandb.run.name = 'num_dense_'+ str(config.num_dense)+'_bs_'+str(config.batch_size)+'_ac_'+ config.activation
+
+    # Define data transformations
+    transform = transforms.Compose([
+        transforms.ToPILImage(),  # Convert numpy array to PIL Image
+        transforms.Resize((img_size, img_size)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    ])
+
+    # Load and preprocess the data
+    dataset = InaturalistDataset(X_train, y_train, transform=transform)
+    train_set, val_set = random_split(dataset, [9000, len(dataset) - 9000])
+    train_loader = DataLoader(train_set, batch_size=config.batch_size, shuffle=True)
+    val_loader = DataLoader(val_set, batch_size=config.batch_size, shuffle=False)
+
+    # Initialize the model
+    model = ConvolutionalNetwork(config)
+
+    # Train the model
+    trainer = pl.Trainer(max_epochs=config.epochs)
+    trainer.fit(model, train_loader, val_loader)
+
+wandb.agent(sweep_id, train, count = 20)
