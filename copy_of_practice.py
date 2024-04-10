@@ -132,3 +132,60 @@ y_train = one_hot_encode(y_train_tensor, num_classes)
 y_val = one_hot_encode(y_val_tensor, num_classes)
 
 type(y_train)
+
+leng = np.shape(X_train)
+arr = np.arange(leng[0])
+np.random.shuffle(arr)
+X_train_shuf = []
+y_train_shuf = []
+X_val_shuf = []
+y_val_shuf = []
+
+for i in range(leng[0]):
+  if i <= 9000:
+    X_train_shuf.append(X_train[arr[i]])
+    y_train_shuf.append(y_train[arr[i]])
+  else:
+    X_val_shuf.append(X_train[arr[i]])
+    y_val_shuf.append(y_train[arr[i]])
+
+X_train = np.array(X_train_shuf)
+y_train = np.array(y_train_shuf)
+X_val = np.array(X_val_shuf)
+y_val = np.array(y_val_shuf)
+
+# Normalize the data
+X_train = X_train/255.0
+X_val = X_val/255.0
+
+# One hot encode the labels
+# y_train = np_utils.to_categorical(y_train, num_classes)
+# y_val = np_utils.to_categorical(y_val, num_classes)
+def one_hot_encode(labels, num_classes):
+  """
+  Custom function for one-hot encoding
+
+  Args:
+      labels: A tensor of integer labels.
+      num_classes: The total number of possible categories.
+
+  Returns:
+      A tensor of one-hot encoded labels.
+  """
+  # y_onehot = torch.zeros((labels.size(0), num_classes))  # Create a zero tensor
+  # y_onehot.scatter_(1, labels.view(-1, 1), 1)  # Scatter 1s at the corresponding indices
+  y_onehot = torch.zeros((labels.size(0), num_classes))  # Create a zero tensor
+  y_onehot.scatter_(1, labels.view(-1, 1).long(), 1)  # Scatter 1s at corresponding indices (cast to long)
+
+  return y_onehot
+
+# Convert NumPy arrays to PyTorch tensors
+y_train_tensor = torch.from_numpy(y_train)
+y_val_tensor = torch.from_numpy(y_val)
+
+# One-hot encode the tensors
+y_train = one_hot_encode(y_train_tensor, num_classes)
+y_val = one_hot_encode(y_val_tensor, num_classes)
+
+
+
