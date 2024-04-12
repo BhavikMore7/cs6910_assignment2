@@ -1,4 +1,21 @@
 # cs6910_assignment2
+##Part A
+This code implements a Convolutional Neural Network (CNN) for image classification using PyTorch Lightning. It leverages the iNaturalist 12K dataset to train the model.
+
+The CNN architecture features:
+
+Five convolutional layers to extract image features
+Max pooling for dimensionality reduction
+Batch normalization for improved training stability
+Dropout to prevent overfitting
+A final fully connected layer with softmax activation for classification tasks
+The code offers flexibility by allowing you to define key settings through command line arguments. These settings, also known as hyperparameters, include:
+
+Activation function type (e.g., ReLU, LeakyReLU)
+Batch normalization usage (on/off)
+Data augmentation techniques (random cropping, flipping, etc.)
+Filter organization within the convolutional layers (number of filters, kernel size)
+Dropout rate
 This is an implementation of Convolutional Neural networks using Pytorch lightining and Fine Tuning.
 The PartA of the code corresponds to training the CNN on the inaturalist data set which can be found on:
 https://storage.googleapis.com/wandb_datasets/nature_12K.zip
