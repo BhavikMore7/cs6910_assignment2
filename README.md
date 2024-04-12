@@ -1,31 +1,26 @@
 # cs6910_assignment2
 ##Part A
+# CNN Image Classification with PyTorch Lightning
+
 This code implements a Convolutional Neural Network (CNN) for image classification using PyTorch Lightning. It leverages the iNaturalist 12K dataset to train the model.
 
-The CNN architecture features:
+## CNN Architecture Features:
 
-Five convolutional layers to extract image features
-Max pooling for dimensionality reduction
-Batch normalization for improved training stability
-Dropout to prevent overfitting
-A final fully connected layer with softmax activation for classification tasks
-The code offers flexibility by allowing you to define key settings through command line arguments. These settings, also known as hyperparameters, include:
+- **Five Convolutional Layers:** These layers are responsible for extracting image features.
+- **Max Pooling:** Used for dimensionality reduction.
+- **Batch Normalization:** Improves training stability by normalizing the inputs of each layer.
+- **Dropout:** Prevents overfitting by randomly dropping out connections between neurons.
+- **Final Fully Connected Layer:** Employs softmax activation for classification tasks.
 
-Activation function type (e.g., ReLU, LeakyReLU)
-Batch normalization usage (on/off)
-Data augmentation techniques (random cropping, flipping, etc.)
-Filter organization within the convolutional layers (number of filters, kernel size)
-Dropout rate
-This is an implementation of Convolutional Neural networks using Pytorch lightining and Fine Tuning.
-The PartA of the code corresponds to training the CNN on the inaturalist data set which can be found on:
-https://storage.googleapis.com/wandb_datasets/nature_12K.zip
-For Fine-tuning your Deep Learning Model(PartB):
-Again Pytorch lightining is used to fine tune ResNet on the inaturalist dataset
-With the code you can furthermore:
-Optimizing Hyperparameters: The Weights & Biases platform can help you streamline hyperparameter tuning. You set up the configurations you want to test, and the platform automatically explores those possibilities, recording the results.
-Adapting the Model Architecture: You can experiment with different configurations for your convolutional neural network (CNN) by making changes to the code in the "Model1" class. This lets you try out various layer structures, activation functions, and other architectural elements.
-Enhancing Data with Augmentation: The "DataModule" class allows you to test out different data augmentation techniques. This can improve the strength and accuracy of your model.
+## Flexibility and Hyperparameters:
 
+The code offers flexibility by allowing the definition of key settings through command line arguments. These settings, also known as hyperparameters, include:
+
+- **Activation Function Type:** Such as ReLU, LeakyReLU, etc.
+- **Batch Normalization Usage:** Can be toggled on or off.
+- **Data Augmentation Techniques:** Options include random cropping, flipping, etc.
+- **Filter Organization:** Specifies the number of filters and kernel size within the convolutional layers.
+- **Dropout Rate:** Controls the dropout probability.
 
 
 
