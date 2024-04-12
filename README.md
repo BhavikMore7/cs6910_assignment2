@@ -22,19 +22,39 @@ The code offers flexibility by allowing the definition of key settings through c
 - **Filter Organization:** Specifies the number of filters and kernel size within the convolutional layers.
 - **Dropout Rate:** Controls the dropout probability.
 
+### Dataset and Data Loaders
+
+- **iNaturalist 12K Dataset:** The dataset is sourced from the `/kaggle/input/inaturalist12k/Data/inaturalist_12K/train` and `/kaggle/input/inaturalist12k/Data/inaturalist_12K/val` directories for training and testing, respectively (if utilizing Kaggle).
+- **Data Augmentation Parameter:** Depending on the value of the `data_augmentation` parameter in the project configuration, either `transform` or `transform_augmented` is applied to the training set.
+- **Testing Set:** The testing set always employs the `transform` function.
+The dataset is split into training and validation sets using a ratio of 80:20. Data loader objects are created for both sets, with a batch size of 64 for both and the training set being shuffled.
+
+### Data Transformations
+
+- **Two Sets of Transformations:** Two sets of data transformations are specified: `transform` and `transform_augmented`.
+- **Common Transformations:** Both transformations resize the images to 256x256 pixels and convert them into tensors.
+- **Augmented Transformation:** `transform_augmented` incorporates additional data augmentation techniques such as random cropping, flipping, and rotating to enhance variation in the training data.
+- **Normalization:** Both transformations normalize the images using mean and standard deviation values derived from the ImageNet dataset.
 
 
-Train and Fine-tune a Convolutional Neural Network with PyTorch Lightning
 
-This code provides two parts:
 
-Part A: Train a CNN from Scratch: This section implements a Convolutional Neural Network (CNN) from the ground up using PyTorch Lightning. It trains the model on the Inaturalist dataset, downloadable from [].
-Part B: Fine-tune a Pre-trained Model (ResNet): This section demonstrates fine-tuning a pre-trained ResNet model on the same Inaturalist dataset using PyTorch Lightning again.
-Beyond these core functionalities, the code allows you to:
+### Train and Fine-tune a Convolutional Neural Network with PyTorch Lightning
 
-Optimize Hyperparameters: Easily adjust various model settings using the Weights & Biases platform. Simply define the configurations you want to test, and the platform will explore them automatically, logging the results for your analysis.
-Customize Model Architecture: Experiment with different CNN architectures by modifying the "Model1" class code. You can freely change layer structures, activation functions, and other architectural elements to find the optimal configuration for your task.
-Enhance Data with Augmentation: The "DataModule" class empowers you to explore various data augmentation techniques. This can significantly improve the robustness and accuracy of your model.
+This code offers two main functionalities:
+
+#### Part A: Train a CNN from Scratch
+- **Implementation:** This section constructs a Convolutional Neural Network (CNN) from scratch using PyTorch Lightning.
+- **Dataset:** It trains the model on the iNaturalist dataset, which is downloadable from [link].
+  
+#### Part B: Fine-tune a Pre-trained Model (ResNet)
+- **Fine-tuning:** Demonstrates the process of fine-tuning a pre-trained ResNet model on the same iNaturalist dataset using PyTorch Lightning.
+  
+#### Additional Features:
+- **Hyperparameter Optimization:** Easily adjust various model settings using the Weights & Biases platform. Define configurations to test, and the platform automatically explores them, logging results for analysis.
+- **Customizable Architecture:** Experiment with different CNN architectures by modifying the "Model1" class code. You can freely alter layer structures, activation functions, and other architectural elements to find the best configuration for your task.
+- **Data Augmentation:** The "DataModule" class allows exploration of various data augmentation techniques, enhancing the model's robustness and accuracy.
+
 WandB report link:
 https://wandb.ai/ch22m009/DLASSIGN_2/reports/CS6910-Assignment-2--Vmlldzo3NTA3OTM5
 References :
